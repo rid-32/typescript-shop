@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "prod": "npm run build && node ./dist/index.js",
-    "start": "export NODE_ENV=development && ts-node-dev --respawn --transpileOnly ./src"
+    "start:prod": "npm run build && node ./build",
+    "start:dev": "export NODE_ENV=development && ts-node-dev --inspect --respawn --transpileOnly -- ./src"
   },
   "keywords": [
     "typescript",
@@ -22,7 +22,6 @@
     "@types/node": "^11.13.0",
     "config": "^3.0.1",
     "dotenv": "^7.0.0",
-    "nodemon": "^1.18.10",
     "ts-node-dev": "^1.0.0-pre.32",
     "typescript": "^3.4.1"
   },
