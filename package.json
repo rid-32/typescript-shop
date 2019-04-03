@@ -6,8 +6,9 @@
   "scripts": {
     "build": "tsc",
     "start:prod": "npm run build && node ./build",
-    "start:dev": "export NODE_ENV=development && ts-node-dev --inspect --respawn --transpileOnly -- ./src",
-    "livereload": "export NODE_ENV=development && ts-node-dev --inspect --respawn --transpileOnly -- ./src"
+    "dev": "export NODE_ENV=development && nodemon --exec ts-node ./src/index.ts",
+    "dockerize": "docker build -t rest-shop .",
+    "start:dev": "docker run -it -p 3000:3000 -v $(pwd):/app rest-shop"
   },
   "keywords": [
     "typescript",
@@ -23,7 +24,8 @@
     "@types/node": "^11.13.0",
     "config": "^3.0.1",
     "dotenv": "^7.0.0",
-    "ts-node-dev": "^1.0.0-pre.32",
+    "nodemon": "^1.18.10",
+    "ts-node": "^8.0.3",
     "typescript": "^3.4.1"
   },
   "dependencies": {
