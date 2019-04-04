@@ -6,15 +6,14 @@ export default new Promise((res, rej) => {
     useNewUrlParser: true
   });
 
-  const db = mongoose.connection;
-
-  db.on(
+  mongoose.connection.on(
     "open",
     (): void => {
-      res(db);
+      res(mongoose.connection);
     }
   );
-  db.on(
+
+  mongoose.connection.on(
     "error",
     (error): void => {
       rej(error);
