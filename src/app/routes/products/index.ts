@@ -9,6 +9,9 @@ router
     .get(handlers.getProducts)
     .post(handlers.createProduct);
 
-router.route("/:id").get(handlers.getProductById).delete(handlers.deleteProduct);
+router
+    .route("/:id")
+    .get(handlers.getProductById)
+    .delete(handlers.deleteProduct);
 
 export default router;

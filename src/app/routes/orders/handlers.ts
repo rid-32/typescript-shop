@@ -1,5 +1,7 @@
 import { RequestHandler } from "express";
 
+import { NewOrder } from "./handlers.d";
+
 export const getOrders: RequestHandler = (req, res): void => {
     res.status(200).json({
         message: "All orders"
@@ -7,8 +9,14 @@ export const getOrders: RequestHandler = (req, res): void => {
 };
 
 export const createOrder: RequestHandler = (req, res): void => {
-    res.status(200).json({
-        message: "Order was created"
+    const order: NewOrder = {
+        productId: req.body.productId,
+        quantity: req.body.quantity
+    };
+
+    res.status(201).json({
+        message: "Order was created",
+        order
     });
 };
 
