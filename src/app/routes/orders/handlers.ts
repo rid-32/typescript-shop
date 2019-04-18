@@ -1,15 +1,11 @@
-import { RequestHandler } from "express";
-
-import { NewOrder } from "./handlers.d";
-
-export const getOrders: RequestHandler = (req, res): void => {
+export const getOrders = (req, res): void => {
     res.status(200).json({
         message: "All orders"
     });
 };
 
-export const createOrder: RequestHandler = (req, res): void => {
-    const order: NewOrder = {
+export const createOrder = (req, res): void => {
+    const order = {
         productId: req.body.productId,
         quantity: req.body.quantity
     };
@@ -20,7 +16,7 @@ export const createOrder: RequestHandler = (req, res): void => {
     });
 };
 
-export const deleteOrder: RequestHandler = (req, res): void => {
+export const deleteOrder = (req, res): void => {
     const { id } = req.params;
 
     res.status(200).json({
@@ -28,7 +24,7 @@ export const deleteOrder: RequestHandler = (req, res): void => {
     });
 };
 
-export const getOrderById: RequestHandler = (req, res): void => {
+export const getOrderById = (req, res): void => {
     const { id } = req.params;
 
     res.status(200).json({

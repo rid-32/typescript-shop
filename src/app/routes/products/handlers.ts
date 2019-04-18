@@ -1,14 +1,12 @@
-import { RequestHandler } from "express";
+import Product from "../../models/product";
 
-import { NewProduct } from "./handlers.d";
-
-export const getProducts: RequestHandler = (req, res): void => {
+export const getProducts = (req, res): void => {
     res.status(200).json({
         data: "All products are here"
     });
 };
 
-export const getProductById: RequestHandler = (req, res): void => {
+export const getProductById = (req, res): void => {
     const { id } = req.params;
 
     res.status(200).json({
@@ -16,19 +14,25 @@ export const getProductById: RequestHandler = (req, res): void => {
     });
 };
 
-export const createProduct: RequestHandler = (req, res): void => {
-    const product: NewProduct = {
+export const createProduct = async (req, res): Promise<void> => {
+    const product = new Product({
         name: req.body.name,
         price: req.body.price
-    };
-
-    res.status(201).json({
-        message: "New product was created",
-        product
     });
+
+    try {
+        await product.save();
+
+        res.status(201).json({
+            message: "New product was created",
+            product
+        });
+    } catch (error) {
+        res.status(400).json();
+    }
 };
 
-export const deleteProduct: RequestHandler = (req, res): void => {
+export const deleteProduct = (req, res): void => {
     const { id } = req.params;
 
     res.status(200).json({

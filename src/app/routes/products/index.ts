@@ -1,8 +1,8 @@
-import { Router } from "express";
+import express = require("express");
 
 import * as handlers from "./handlers";
 
-const router = Router();
+const router = express.Router();
 
 router
     .route("/")

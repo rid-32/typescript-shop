@@ -1,10 +1,10 @@
 import { createServer } from "http";
-import * as config from "config";
+import config = require("config")
 
 import app from "./app";
 import dbs from "./dbs";
 
-const port = config.get("APP_PORT");
+const port = config.get<string>("APP_PORT");
 const server = createServer(app);
 
 dbs

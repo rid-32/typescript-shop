@@ -4,10 +4,7 @@
     "module": "commonjs",
     "outDir": "./build",
     "sourceMap": true,
-    "baseUrl": ".",
-    "paths": {
-      "*": ["app", "dbs", "node_modules"]
-    }
+    "baseUrl": "."
   },
   "include": ["src/**/*"]
 }

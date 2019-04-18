@@ -1,5 +1,5 @@
-import * as mongoose from "mongoose";
-import * as config from "config";
+import mongoose = require("mongoose");
+import config = require("config");
 
 export default new Promise(
     (res, rej): void => {

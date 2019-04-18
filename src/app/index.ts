@@ -1,7 +1,6 @@
-import * as express from "express";
-import { Request, Response, NextFunction } from "express";
-import * as config from "config";
-import * as morgan from "morgan";
+import express = require("express");
+import config = require("config");
+import morgan = require("morgan");
 
 import { products as productsRoutes, orders as ordersRoutes } from "./routes";
 
@@ -23,7 +22,7 @@ app.use(express.json());
 
 // handling CORS
 app.use(
-    (req: Request, res: Response, next: NextFunction): any => {
+    (req, res, next): any => {
         res.header("Access-Control-Allow-Origin", "*");
         res.header(
             "Access-Control-Allow-Headers",
@@ -45,7 +44,7 @@ app.use("/orders", ordersRoutes);
 
 // handle not found route
 app.use(
-    (req: Request, res: Response, next: NextFunction): void => {
+    (req, res, next): void => {
         const error = new Error("Not Found");
 
         error["status"] = 404;
@@ -56,7 +55,7 @@ app.use(
 
 // handle errors
 app.use(
-    (err, req: Request, res: Response, next: NextFunction): void => {
+    (err, req, res, next): void => {
         res.status(err.status || 500).json();
     }
 );
