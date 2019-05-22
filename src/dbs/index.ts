@@ -1,5 +1,5 @@
-import mongobd from "./mongodb";
+import mongobd from './mongodb';
 
-const init = () => Promise.all([mongobd]);
+const init = (): Promise<object[]> => Promise.all([mongobd]);
 
 export default { init };
