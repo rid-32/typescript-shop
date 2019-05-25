@@ -12,6 +12,7 @@ router
 router
   .route('/:id')
   .get(handlers.getProductById)
-  .delete(handlers.deleteProduct);
+  .delete(handlers.deleteProduct)
+  .patch(handlers.changeProduct);
 
 export default router;
