@@ -1,10 +1,10 @@
-import * as mongoose from 'mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
+import * as config from 'config';
 
 import Product from '../../models/product';
 
 interface ProductShape {
-  _id: string;
+  _id: Types.ObjectId;
   name: string;
   price: number;
 }
@@ -26,25 +26,35 @@ const getProductFromDocument = (product: Document): ProductShape => {
   return result;
 };
 
-interface ProductWithMetadata extends ProductShape {
-  request: {
-    type: string;
-    url: string;
-  };
+interface ProductRequest {
+  type: string;
+  description?: string;
+  url: string;
+  body?: {};
 }
 
+interface ProductWithMetadata extends ProductShape {
+  request: ProductRequest;
+}
+
+const getUrl = (id: string | void): string => {
+  const baseUrl = config.get<string>('BASE_URL');
+  const url = `${baseUrl}/products`;
+
+  return id ? `${url}/${id}` : url;
+};
+
+const getProductWithMetadata = (product: Document): ProductWithMetadata => ({
+  ...getProductFromDocument(product),
+  request: {
+    type: 'GET',
+    description: 'Get the product',
+    url: getUrl(product._id),
+  },
+});
+
 const getProductsWithMetadata = (products: Document[]): ProductWithMetadata[] =>
-  products.map(
-    (product: Document): ProductWithMetadata => {
-      return {
-        ...getProductFromDocument(product),
-        request: {
-          type: 'GET',
-          url: `http://localhost:3000/products/${product._id}`,
-        },
-      };
-    },
-  );
+  products.map(getProductWithMetadata);
 
 interface ProductsResponse {
   data: ProductWithMetadata[];
@@ -68,15 +78,24 @@ export const getProducts = async (req, res): Promise<void> => {
 };
 
 export const getProductById = async (req, res): Promise<void> => {
-  const { id } = req.params;
+  const { id }: { id: Types.ObjectId } = req.params;
 
   try {
-    const product = await Product.findById({ _id: id }).select(
+    const product: Document = await Product.findById({ _id: id }).select(
       productFieldsForSelection.join(' '),
     );
 
     if (product) {
-      res.status(200).json(product);
+      const payload = {
+        ...getProductFromDocument(product),
+        request: {
+          type: 'GET',
+          description: 'Get all products',
+          url: getUrl(),
+        },
+      };
+
+      res.status(200).json(payload);
     } else {
       res.status(404).end();
     }
@@ -86,31 +105,38 @@ export const getProductById = async (req, res): Promise<void> => {
 };
 
 export const createProduct = async (req, res): Promise<void> => {
-  const product = new Product({
-    _id: new mongoose.Types.ObjectId(),
+  const payloadForNewProduct: ProductShape = {
+    _id: new Types.ObjectId(),
     name: req.body.name,
     price: req.body.price,
-  });
+  };
+  const product: Document = new Product(payloadForNewProduct);
 
   try {
-    const newProduct = await product.save();
+    const newProduct: Document = await product.save();
+    const payload: ProductWithMetadata = getProductWithMetadata(newProduct);
 
-    res.status(201).json({
-      message: 'New product was created',
-      product,
-    });
+    res.status(201).json(payload);
   } catch (error) {
     res.status(400).json();
   }
 };
 
 export const deleteProduct = async (req, res): Promise<void> => {
-  const { id } = req.params;
+  const { id }: { id: Types.ObjectId } = req.params;
 
   try {
     await Product.remove({ _id: id });
 
-    res.status(200).end();
+    const requestForResponse: ProductRequest = {
+      type: 'POST',
+      description: 'Create new product',
+      url: getUrl(),
+      body: { name: 'String', price: 'Number' },
+    };
+    const response = { request: requestForResponse };
+
+    res.status(200).json(response);
   } catch (error) {
     res.status(400).end();
   }
@@ -121,8 +147,16 @@ interface DataForUpload {
   price?: number;
 }
 
-const getUpdatedPayload = (data: DataForUpload): DataForUpload => {
-  const validFields = ['name', 'price'];
+const getValidFieldsForUpdate = (): string[] => {
+  const excludedFields = ['_id'];
+
+  return productFieldsForSelection.filter(
+    (field: string): boolean => !excludedFields.includes(field),
+  );
+};
+
+const getPayloadForUpdate = (data: DataForUpload): DataForUpload => {
+  const validFields: string[] = getValidFieldsForUpdate();
   const result = {};
 
   for (const key in data) {
@@ -133,8 +167,8 @@ const getUpdatedPayload = (data: DataForUpload): DataForUpload => {
 };
 
 export const changeProduct = async (req, res): Promise<void> => {
-  const { id } = req.params;
-  const payload = getUpdatedPayload(req.body);
+  const { id }: { id: Types.ObjectId } = req.params;
+  const payload: DataForUpload = getPayloadForUpdate(req.body);
 
   try {
     await Product.update(
@@ -144,7 +178,16 @@ export const changeProduct = async (req, res): Promise<void> => {
       },
     );
 
-    res.status(200).end();
+    const requestForResponse: ProductRequest = {
+      type: 'GET',
+      description: 'Get updated product',
+      url: getUrl(String(id)),
+    };
+    const response = {
+      request: requestForResponse,
+    };
+
+    res.status(200).json(response);
   } catch (error) {
     res.status(400).end();
   }

@@ -1,11 +1,11 @@
-import { createServer } from 'http';
-import config = require('config');
+import { createServer, Server } from 'http';
+import * as config from 'config';
 
 import app from './app';
 import dbs from './dbs';
 
-const port = config.get<string>('APP_PORT');
-const server = createServer(app);
+const port: string = config.get<string>('APP_PORT');
+const server: Server = createServer(app);
 
 dbs
   .init()
@@ -18,7 +18,7 @@ dbs
     },
   )
   .catch(
-    (error): void => {
+    (error: Error): void => {
       console.error(error);
 
       process.exit(1);

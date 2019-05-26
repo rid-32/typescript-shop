@@ -17,7 +17,11 @@ if (NODE_ENV !== 'test') {
 }
 
 // parsing request body
-app.use(express.urlencoded());
+app.use(
+  express.urlencoded({
+    extended: true,
+  }),
+);
 app.use(express.json());
 
 // handling CORS
