@@ -1,5 +1,6 @@
 import { Document, Types } from 'mongoose';
-import * as config from 'config';
+
+import { getUrlById } from '../../utils/url';
 
 import Product from '../../models/product';
 
@@ -16,6 +17,8 @@ const productShape: ProductShape = {
 };
 const productFieldsForSelection: string[] = Object.keys(productShape);
 
+const getProductsUrl = getUrlById.bind(null, 'products');
+
 const getProductFromDocument = (product: Document): ProductShape => {
   const result = productShape;
 
@@ -28,7 +31,7 @@ const getProductFromDocument = (product: Document): ProductShape => {
 
 interface ProductRequest {
   type: string;
-  description?: string;
+  description: string;
   url: string;
   body?: {};
 }
@@ -37,24 +40,23 @@ interface ProductWithMetadata extends ProductShape {
   request: ProductRequest;
 }
 
-const getUrl = (id: string | void): string => {
-  const baseUrl = config.get<string>('BASE_URL');
-  const url = `${baseUrl}/products`;
-
-  return id ? `${url}/${id}` : url;
-};
-
-const getProductWithMetadata = (product: Document): ProductWithMetadata => ({
+const getProductWithMetadata = (
+  product: Document,
+  meta: ProductRequest,
+): ProductWithMetadata => ({
   ...getProductFromDocument(product),
-  request: {
-    type: 'GET',
-    description: 'Get the product',
-    url: getUrl(product._id),
-  },
+  request: meta,
 });
 
 const getProductsWithMetadata = (products: Document[]): ProductWithMetadata[] =>
-  products.map(getProductWithMetadata);
+  products.map(
+    (product: Document): ProductWithMetadata =>
+      getProductWithMetadata(product, {
+        type: 'GET',
+        description: 'Get the product',
+        url: getProductsUrl(product._id),
+      }),
+  );
 
 interface ProductsResponse {
   data: ProductWithMetadata[];
@@ -86,14 +88,11 @@ export const getProductById = async (req, res): Promise<void> => {
     );
 
     if (product) {
-      const payload = {
-        ...getProductFromDocument(product),
-        request: {
-          type: 'GET',
-          description: 'Get all products',
-          url: getUrl(),
-        },
-      };
+      const payload: ProductWithMetadata = getProductWithMetadata(product, {
+        type: 'GET',
+        description: 'Get all products',
+        url: getProductsUrl(),
+      });
 
       res.status(200).json(payload);
     } else {
@@ -114,7 +113,11 @@ export const createProduct = async (req, res): Promise<void> => {
 
   try {
     const newProduct: Document = await product.save();
-    const payload: ProductWithMetadata = getProductWithMetadata(newProduct);
+    const payload: ProductWithMetadata = getProductWithMetadata(newProduct, {
+      type: 'GET',
+      description: 'Get the product',
+      url: getProductsUrl(newProduct._id),
+    });
 
     res.status(201).json(payload);
   } catch (error) {
@@ -131,7 +134,7 @@ export const deleteProduct = async (req, res): Promise<void> => {
     const requestForResponse: ProductRequest = {
       type: 'POST',
       description: 'Create new product',
-      url: getUrl(),
+      url: getProductsUrl(),
       body: { name: 'String', price: 'Number' },
     };
     const response = { request: requestForResponse };
@@ -181,7 +184,7 @@ export const changeProduct = async (req, res): Promise<void> => {
     const requestForResponse: ProductRequest = {
       type: 'GET',
       description: 'Get updated product',
-      url: getUrl(String(id)),
+      url: getProductsUrl(String(id)),
     };
     const response = {
       request: requestForResponse,
