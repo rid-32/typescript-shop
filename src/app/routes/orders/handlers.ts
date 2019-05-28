@@ -1,6 +1,7 @@
 import { Types, Document } from 'mongoose';
 
 import { getUrlById } from '../../utils/url';
+import { productFieldsForSelection } from '../products/handlers';
 
 import Order from '../../models/order';
 import Product from '../../models/product';
@@ -66,9 +67,9 @@ const getOrdersWithMetadata = (orders: Document[] = []): OrderWithMetadata[] =>
 
 export const getOrders = async (req, res): Promise<void> => {
   try {
-    const orders: Document[] = await Order.find().select(
-      orderFieldsForSelection.join(' '),
-    );
+    const orders: Document[] = await Order.find()
+      .select(orderFieldsForSelection.join(' '))
+      .populate('product', productFieldsForSelection.join(' '));
     const payload: OrdersListShape = {
       data: getOrdersWithMetadata(orders),
       total: orders.length,
@@ -126,9 +127,9 @@ export const getOrderById = async (req, res): Promise<void> => {
   const { id }: { id: Types.ObjectId } = req.params;
 
   try {
-    const order: Document = await Order.findById({ _id: id }).select(
-      orderFieldsForSelection.join(' '),
-    );
+    const order: Document = await Order.findById({ _id: id })
+      .select(orderFieldsForSelection.join(' '))
+      .populate('product', productFieldsForSelection.join(' '));
 
     if (order) {
       const payload = getOrderWithMetadata(order, {

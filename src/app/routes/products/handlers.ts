@@ -15,7 +15,7 @@ const productShape: ProductShape = {
   name: null,
   price: null,
 };
-const productFieldsForSelection: string[] = Object.keys(productShape);
+export const productFieldsForSelection: string[] = Object.keys(productShape);
 
 const getProductsUrl = getUrlById.bind(null, 'products');
 
