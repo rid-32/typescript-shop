@@ -1,3 +1,4 @@
+import path = require('path');
 import express = require('express');
 import config = require('config');
 import morgan = require('morgan');
@@ -15,6 +16,8 @@ if (NODE_ENV !== 'test') {
     app.use(morgan('combined'));
   }
 }
+
+app.use('/uploads', express.static(path.resolve(__dirname, '../../uploads/')));
 
 // parsing request body
 app.use(

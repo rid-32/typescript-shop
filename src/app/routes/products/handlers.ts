@@ -8,12 +8,14 @@ interface ProductShape {
   _id: Types.ObjectId;
   name: string;
   price: number;
+  productImage: string;
 }
 
 const productShape: ProductShape = {
   _id: null,
   name: null,
   price: null,
+  productImage: null,
 };
 export const productFieldsForSelection: string[] = Object.keys(productShape);
 
@@ -108,6 +110,7 @@ export const createProduct = async (req, res): Promise<void> => {
     _id: new Types.ObjectId(),
     name: req.body.name,
     price: req.body.price,
+    productImage: req.file.path,
   };
   const product: Document = new Product(payloadForNewProduct);
 
