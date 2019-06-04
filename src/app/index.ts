@@ -3,7 +3,11 @@ import express = require('express');
 import config = require('config');
 import morgan = require('morgan');
 
-import { products as productsRoutes, orders as ordersRoutes } from './routes';
+import {
+  products as productsRoutes,
+  orders as ordersRoutes,
+  user as userRoutes,
+} from './routes';
 
 const NODE_ENV = config.get('NODE_ENV');
 const app = express();
@@ -48,6 +52,7 @@ app.use(
 
 app.use('/products', productsRoutes);
 app.use('/orders', ordersRoutes);
+app.use('/user', userRoutes);
 
 // handle not found route
 app.use(

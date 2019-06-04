@@ -5,6 +5,7 @@ export default new Promise(
   (res, rej): void => {
     mongoose.connect(config.get('MONGODB_URL'), {
       useNewUrlParser: true,
+      useCreateIndex: true,
     });
 
     mongoose.connection.on(
