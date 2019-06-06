@@ -2,6 +2,7 @@ import express = require('express');
 import * as multer from 'multer';
 
 import * as handlers from './handlers';
+import checkAuth from '../../middleware/check-auth';
 
 const router = express.Router();
 // multer will execute those functions when new file
@@ -34,12 +35,12 @@ const upload = multer({
 router
   .route('/')
   .get(handlers.getProducts)
-  .post(upload.single('productImage'), handlers.createProduct);
+  .post(checkAuth, upload.single('productImage'), handlers.createProduct);
 
 router
   .route('/:id')
   .get(handlers.getProductById)
-  .delete(handlers.deleteProduct)
-  .patch(handlers.changeProduct);
+  .delete(checkAuth, handlers.deleteProduct)
+  .patch(checkAuth, handlers.changeProduct);
 
 export default router;

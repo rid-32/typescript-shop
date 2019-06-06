@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start:prod": "npm run build && node ./build",
-    "dev": "export NODE_ENV=development && nodemon --exec ts-node ./src/index.ts",
+    "dev": "export NODE_ENV=development && nodemon --exec node --inspect --require ts-node/register ./src/index.ts",
     "image:build": "docker build -t rest-shop .",
     "container:run": "docker run -it -p 3000:3000 -v $(pwd):/app rest-shop",
     "tsc": "tsc src/**/*.ts --noEmit",

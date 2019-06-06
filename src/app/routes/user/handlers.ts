@@ -83,7 +83,7 @@ export const loginUser = async (req, res): Promise<void> => {
     };
     const SECRET_KEY = config.get<string>('JWT_KEY');
     const tokenOptions = {
-      expiresIn: '1h',
+      expiresIn: config.get<string>('TOKEN_EXPIRES_IN'),
     };
 
     const token = jwt.sign(payloadForToken, SECRET_KEY, tokenOptions);
