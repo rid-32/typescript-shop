@@ -1,76 +1,35 @@
-import path = require('path');
-import express = require('express');
-import config = require('config');
-import morgan = require('morgan');
+import * as path from 'path';
+import * as express from 'express';
+import * as config from 'config';
+import * as morgan from 'morgan';
 
-import {
-  products as productsRoutes,
-  orders as ordersRoutes,
-  user as userRoutes,
-} from './routes';
+import * as routes from './routes';
+import * as controllers from './controllers/utils';
 
-const NODE_ENV = config.get('NODE_ENV');
+const isTesting = config.get<string>('IS_TESTING');
+const isDevelopment = config.get<string>('IS_DEVELOPMENT');
 const app = express();
 
-// set up logger
-if (NODE_ENV !== 'test') {
-  if (NODE_ENV === 'development') {
-    app.use(morgan('dev'));
-  } else {
-    app.use(morgan('combined'));
-  }
+if (!isTesting) {
+  const morganMode = isDevelopment ? 'dev' : 'combined';
+
+  app.use(morgan(morganMode));
 }
 
 app.use('/uploads', express.static(path.resolve(__dirname, '../../uploads/')));
-
-// parsing request body
 app.use(
   express.urlencoded({
     extended: true,
   }),
 );
 app.use(express.json());
+app.use(controllers.resolveCORS);
 
-// handling CORS
-app.use(
-  (req, res, next): object | void => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header(
-      'Access-Control-Allow-Headers',
-      'Origin, X-Requested-With, Content-Type, Accept, Authorization',
-    );
+app.use('/products', routes.products);
+app.use('/orders', routes.orders);
+app.use('/user', routes.user);
 
-    if (req.method === 'OPTIONS') {
-      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-
-      return res.status(200).json();
-    }
-
-    next();
-  },
-);
-
-app.use('/products', productsRoutes);
-app.use('/orders', ordersRoutes);
-app.use('/user', userRoutes);
-
-// handle not found route
-app.use(
-  (req, res, next): void => {
-    const error = new Error('Not Found');
-
-    error['status'] = 404;
-
-    next(error);
-  },
-);
-
-// handle errors
-app.use(
-  // eslint-disable-next-line
-  (err, req, res, next): void => {
-    res.status(err.status || 500).json();
-  },
-);
+app.use(controllers.handleNotFound);
+app.use(controllers.handleErrors);
 
 export default app;

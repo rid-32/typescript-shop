@@ -1,10 +1,10 @@
 import { Types, Document } from 'mongoose';
 
-import { getUrlById } from '../../utils/url';
-import { productFieldsForSelection } from '../products/handlers';
+import { getUrlById } from '../utils/url';
+import { productFieldsForSelection } from './products';
 
-import Order from '../../models/order';
-import Product from '../../models/product';
+import Order from '../models/order';
+import Product from '../models/product';
 
 interface OrderShape {
   _id: Types.ObjectId;
@@ -77,7 +77,7 @@ export const getOrders = async (req, res): Promise<void> => {
 
     res.status(200).json(payload);
   } catch (error) {
-    res.status(404).end();
+    res.status(400).end();
   }
 };
 

@@ -3,7 +3,7 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import * as config from 'config';
 
-import User from '../../models/user';
+import User from '../models/user';
 
 interface UserShape {
   _id: Types.ObjectId;

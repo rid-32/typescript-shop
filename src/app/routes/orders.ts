@@ -1,7 +1,7 @@
-import express = require('express');
+import * as express from 'express';
 
-import * as handlers from './handlers';
-import checkAuth from '../../middleware/check-auth';
+import * as handlers from '../controllers/orders';
+import checkAuth from '../middleware/checkAuth';
 
 const router = express.Router();
 

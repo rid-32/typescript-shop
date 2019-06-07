@@ -1,10 +1,7 @@
-import express = require('express');
 import * as multer from 'multer';
 
-import * as handlers from './handlers';
-import checkAuth from '../../middleware/check-auth';
-
-const router = express.Router();
+// the name of key in the body
+const keyName = 'productImage';
 // multer will execute those functions when new file
 // will be received
 const storage = multer.diskStorage({
@@ -32,15 +29,4 @@ const upload = multer({
   fileFilter,
 });
 
-router
-  .route('/')
-  .get(handlers.getProducts)
-  .post(checkAuth, upload.single('productImage'), handlers.createProduct);
-
-router
-  .route('/:id')
-  .get(handlers.getProductById)
-  .delete(checkAuth, handlers.deleteProduct)
-  .patch(checkAuth, handlers.changeProduct);
-
-export default router;
+export default upload.single(keyName);

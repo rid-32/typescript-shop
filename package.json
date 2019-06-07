@@ -4,9 +4,8 @@
   "description": "First experience with typescript on node.js",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
-    "start:prod": "npm run build && node ./build",
-    "dev": "export NODE_ENV=development && nodemon --exec node --inspect --require ts-node/register ./src/index.ts",
+    "start:prod": "export NODE_ENV=production && tsc && node ./build",
+    "start:dev": "export NODE_ENV=development && nodemon --exec node --inspect --require ts-node/register ./src/index.ts",
     "image:build": "docker build -t rest-shop .",
     "container:run": "docker run -it -p 3000:3000 -v $(pwd):/app rest-shop",
     "tsc": "tsc src/**/*.ts --noEmit",

@@ -1,8 +1,8 @@
 import { Document, Types } from 'mongoose';
 
-import { getUrlById } from '../../utils/url';
+import { getUrlById } from '../utils/url';
 
-import Product from '../../models/product';
+import Product from '../models/product';
 
 interface ProductShape {
   _id: Types.ObjectId;
@@ -77,7 +77,7 @@ export const getProducts = async (req, res): Promise<void> => {
 
     res.status(200).json(payload);
   } catch (error) {
-    res.status(404).end();
+    res.status(400).end();
   }
 };
 
@@ -101,7 +101,7 @@ export const getProductById = async (req, res): Promise<void> => {
       res.status(404).end();
     }
   } catch (error) {
-    res.status(404).end();
+    res.status(400).end();
   }
 };
 
